@@ -6,10 +6,28 @@ import {
     signOut 
 } from 'firebase/auth';
 import { auth } from './firebase';
+import { db } from './firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { createOrUpdateUser } from '../services/api';
+
+// Save user data to Firestore
+const saveUserToFirestore = async (user) => {
+    try {
+        await setDoc(doc(db, 'users', user.uid), {
+            email: user.email,
+            displayName: user.displayName || null,
+            photoURL: user.photoURL || null,
+            createdAt: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Error saving user to Firestore:', error);
+    }
+};
 
 export const doCreateUserWithEmailAndPassword = async (email, password) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await saveUserToFirestore(userCredential.user);
         return userCredential.user;
     } catch (error) {
         throw new Error(getErrorMessage(error.code));
@@ -21,6 +39,13 @@ export const doSignInWithEmailAndPassword = async (email, password) => {
         console.log('Attempting to sign in with:', email);
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         console.log('Sign in successful:', userCredential.user);
+        // Save user data to MongoDB
+        await createOrUpdateUser({
+            firebaseUid: userCredential.user.uid,
+            email: userCredential.user.email,
+            displayName: userCredential.user.displayName,
+            photoURL: userCredential.user.photoURL
+        });
         return userCredential.user;
     } catch (error) {
         console.error('Sign in error:', error);
@@ -32,6 +57,14 @@ export const doSignInWithGoogle = async () => {
     try {
         const provider = new GoogleAuthProvider();
         const userCredential = await signInWithPopup(auth, provider);
+        console.log('Sign in successful:', userCredential.user);
+        // Save user data to MongoDB
+        await createOrUpdateUser({
+            firebaseUid: userCredential.user.uid,
+            email: userCredential.user.email,
+            displayName: userCredential.user.displayName,
+            photoURL: userCredential.user.photoURL
+        });
         return userCredential.user;
     } catch (error) {
         throw new Error(getErrorMessage(error.code));
