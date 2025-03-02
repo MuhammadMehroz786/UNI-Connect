@@ -32,11 +32,14 @@ app.use((err, req, res, next) => {
 const User = require('./models/User');
 const Chat = require('./models/Chat');
 const Message = require('./models/Message');
+const feedRoutes = require('./routes/feed');
+
 
 // Routes
 app.use('/api/users', require('./routes/users'));
 app.use('/api/chats', require('./routes/chats'));
 app.use('/api/messages', require('./routes/messages'));
+app.use('/api/feed', feedRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`)); 

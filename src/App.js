@@ -1,8 +1,9 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import HomePage from './components/HomePage';
+import FeedPage from './components/FeedPage';
 import { AuthProvider } from './contexts/authContext';
 import PrivateRoute from './components/PrivateRoute';
 import { getAuth, signOut } from 'firebase/auth';
@@ -36,6 +37,14 @@ function App() {
                 element={
                   <PrivateRoute>
                     <HomePage signOut={handleSignOut} />
+                  </PrivateRoute>
+                } 
+              />
+              <Route 
+                path="/feed" 
+                element={
+                  <PrivateRoute>
+                    <FeedPage />
                   </PrivateRoute>
                 } 
               />
