@@ -156,10 +156,15 @@ function HomePage({ signOut }) {
   const handleBackToList = () => {
     setShowChatList(true);
   };
-
+   const goToFeed = () => {
+    navigate('/feed');
+  };
   return (
     <div className="app">
       <div className="header">
+        <button className="feed-button" onClick={goToFeed}>
+          Go to Feed
+        </button>
         <button className="logout-button" onClick={handleLogout}>
           Logout
         </button>
