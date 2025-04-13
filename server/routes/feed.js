@@ -38,10 +38,17 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const { user, content } = req.body;
+        console.log('Received post data:', { user, content });
+        
+        if (!user || !user.uid || !user.name) {
+            return res.status(400).json({ error: 'Missing required user information' });
+        }
+        
         const newFeed = new Feed({ user, content });
         await newFeed.save();
         res.json(newFeed);
     } catch (err) {
+        console.error('Error creating post:', err);
         res.status(400).json({ error: err.message });
     }
 });
