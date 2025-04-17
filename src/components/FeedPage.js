@@ -1,14 +1,24 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const Feed = () => {
     const [posts, setPosts] = useState([]);
     const [content, setContent] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const auth = getAuth();
-    const user = auth.currentUser;
+    const [user, setUser] = useState(null);
+    
+    // Set up auth listener to properly track user state
+    useEffect(() => {
+        const auth = getAuth();
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+        });
+        
+        // Clean up subscription when component unmounts
+        return () => unsubscribe();
+    }, []);
     
     // Function to fetch posts that can be reused
     const fetchPosts = async () => {
@@ -34,11 +44,19 @@ const Feed = () => {
     // Create a new post
     const handlePost = async () => {
         if (!content.trim()) return;
+        if (!user) {
+            setError("You must be logged in to post");
+            return;
+        }
+        
+        // Use the proper user name with fallback
+        const displayName = user.displayName || user.email?.split('@')[0] || "Anonymous User";
+        
         try {
             await axios.post("http://localhost:5000/api/feed", {
                 user: {
                   uid: user.uid,
-                  name: user.displayName || "Anonymous"
+                  name: displayName
                 },
                 content: content
             });
@@ -80,13 +98,22 @@ const Feed = () => {
             <h2>Feed</h2>
             
             {/* Create new post */}
-            <input 
-                type="text"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="Write a post..."
-            />
-            <button onClick={handlePost}>Post</button>
+            <div className="post-creation">
+                {user ? (
+                    <>
+                        <span className="current-user">{user.displayName || user.email?.split('@')[0]|| "Anonymous"}:</span>
+                        <input 
+                            type="text"
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
+                            placeholder="Write a post..."
+                        />
+                        <button onClick={handlePost}>Post</button>
+                    </>
+                ) : (
+                    <p>Please sign in to create posts</p>
+                )}
+            </div>
             
             {/* Error message */}
             {error && <div style={{ color: 'red' }}>{error}</div>}
