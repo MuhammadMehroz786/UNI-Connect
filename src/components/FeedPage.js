@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import './feedpage.css'
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const Feed = () => {
@@ -95,20 +96,22 @@ const Feed = () => {
     
     return (
         <div>
-            <h2>Feed</h2>
+            <h2 className="Title">Feed</h2>
             
             {/* Create new post */}
             <div className="post-creation">
                 {user ? (
                     <>
-                        <span className="current-user">{user.displayName || user.email?.split('@')[0]|| "Anonymous"}:</span>
+                        <span className="current-user">{user.displayName || user.email?.split('@')[0]|| "Anonymous"}</span>
+                        <br></br>
                         <input 
+                            className="post-create"
                             type="text"
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             placeholder="Write a post..."
                         />
-                        <button onClick={handlePost}>Post</button>
+                        <button className="post" onClick={handlePost}>Post</button>
                     </>
                 ) : (
                     <p>Please sign in to create posts</p>
