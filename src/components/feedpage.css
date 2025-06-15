@@ -67,6 +67,10 @@
   font-size: 14px;
   color: #333;
 }
+.post-image{
+  width: 430px;
+  height: 430px;
+}
 .btn{
   align-self: flex-end;
   margin-top: 8px;

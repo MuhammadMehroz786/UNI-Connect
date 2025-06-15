@@ -8,6 +8,7 @@ export default function Feed() {
   const [posts, setPosts] = useState([]);
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
+  const [image, setImage] = useState(null);
 
   useEffect(() => {
     const auth = getAuth();
@@ -33,7 +34,7 @@ export default function Feed() {
   }, []);
 
   const handlePost = async () => {
-    if (!newPost.trim()) return;
+    if (!newPost.trim() && !image) return;
     if (!user) {
       setError("You must be logged in to post");
       return;
@@ -41,16 +42,22 @@ export default function Feed() {
 
     const displayName = user.displayName || user.email?.split('@')[0] || "Anonymous User";
 
-    try {
-      await axios.post("http://localhost:5000/api/feed", {
-        user: {
-          uid: user.uid,
-          name: displayName
-        },
-        content: newPost
-      });
+    const formData = new FormData();
+  if(newPost.trim()) formData.append("content", newPost);
+  formData.append("uid", user.uid);
+  formData.append("name", displayName);
+  if (image) formData.append("image", image);
+  console.log([...formData.entries()]);
+
+  try {
+    await axios.post("http://localhost:5000/api/feed", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
 
       setNewPost('');
+      setImage(null);
       await fetchPosts();
     } catch (err) {
       console.error("Error creating post:", err);
@@ -92,6 +99,11 @@ export default function Feed() {
             value={newPost}
             onChange={(e) => setNewPost(e.target.value)}
           />
+          <input 
+    type="file" 
+    accept="image/*" 
+    onChange={(e) => setImage(e.target.files[0])} 
+  />
           <button onClick={handlePost}>Create Post</button>
         </div>
 
@@ -106,6 +118,15 @@ export default function Feed() {
                   <div key={i}>{line}</div>
                 ))}
               </div>
+              {/* ✅ Display image if exists */}
+    {post.image && (
+      <img
+        src={`http://localhost:5000/api/feed/${post._id}/image`}
+        alt="Post"
+        className="post-image"
+
+      />
+    )}
               <div className="post-actions">
                 <button className='btn' onClick={() => handleEdit(post._id, post.content)}>Edit</button>
                 <button className='btn' onClick={() => handleDelete(post._id)}>Delete</button>
