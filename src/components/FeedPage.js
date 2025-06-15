@@ -90,7 +90,7 @@ export default function Feed() {
 
   return (
     <div className="feed-container">
-      <div className="header">Feed</div>
+      <div className="header">Welcome!</div>
 
       <div className="main">
         <div className="post-input">

@@ -4,6 +4,7 @@
   margin: auto auto;
   padding: 20px;
   max-width: 500px;
+  
 }
 
 .header {
@@ -14,16 +15,26 @@
   width: 100%;
   border-radius: 6px 6px 0 0;
   margin-bottom: 20px;
+  margin-top: -10px;
+  
 }
 .main{
-  padding-top: 100px;
+  padding-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  margin-top: 70px;
+  background-color: white;
+  border-radius: 20px;
+
 }
 .post-input {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   margin-bottom: 20px;
-  border: 2px solid #586dff;
+ 
+  background-color: #dde1f4;
   padding: 10px;
   border-radius: 5px;
 }
@@ -51,11 +62,13 @@
 }
 
 .post-card {
-  border: 2px solid #586dff;
+  background-color: #dde1f4;
   border-radius: 10px;
-  padding: 10px;
+  padding: 10px 10px;
   text-align: left;
   margin-bottom: 10px;
+ 
+  
 }
 
 .post-user {
@@ -82,5 +95,9 @@
   border-radius: 4px;
   cursor: pointer;
   margin-left: 2px;
-
+  
+}
+.post-actions{
+  display: flex;
+  margin-left:250px;
 }
