@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import './feedpage.css';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import Hackathon from "./Hackathon"; // 👈 import the component
 
 export default function Feed() {
@@ -12,6 +13,18 @@ export default function Feed() {
   const [image, setImage] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("feed"); // 👈 tab state
+  const handleSignOut = () => {
+  const auth = getAuth();
+  signOut(auth)
+    .then(() => {
+      setUser(null); // clear user state
+      setActiveTab("feed"); // reset to default tab
+      alert("You have been signed out.");
+    })
+    .catch((error) => {
+      console.error("Error signing out:", error);
+    });
+};
 
   useEffect(() => {
     const auth = getAuth();
@@ -121,6 +134,13 @@ export default function Feed() {
 >
   Hackathons
 </div>
+<div
+  className="sidebar-item logout"
+  onClick={handleSignOut}
+>
+  Sign Out
+</div>
+
 
       </div>
 

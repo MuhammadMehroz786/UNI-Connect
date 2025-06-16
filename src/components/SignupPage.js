@@ -46,7 +46,7 @@ const SignupPage = () => {
                setIsRegistering(true);
                setErrorMessage('');
                await doCreateUserWithEmailAndPassword(formData.email, formData.password);
-               navigate('/home');
+               navigate('/feed');
            }
        } catch (error) {
            setErrorMessage(error.message);
@@ -62,7 +62,7 @@ const SignupPage = () => {
 
    return (
        <div className="signup-container">
-           {userLoggedIn && (<Navigate to={'/home'} replace={true}/>)}
+           {userLoggedIn && (<Navigate to={'/feed'} replace={true}/>)}
            <div className="signup-left">
                <div className="decorative-shapes">
                    <div className="shape circle-1"></div>

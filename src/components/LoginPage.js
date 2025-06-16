@@ -55,7 +55,7 @@ const LoginPage = () => {
                 console.log('Google sign in successful:', user);
                 
                 if (user) {
-                    navigate('/home');
+                    navigate('/feed');
                 }
             } catch (error) {
                 console.error('Google sign-in error:', error);
@@ -73,7 +73,7 @@ const LoginPage = () => {
 
     // If user is already logged in, redirect to home
     if (userLoggedIn) {
-        return <Navigate to="/home" replace />;
+        return <Navigate to="/feed" replace />;
     }
 
     return (
