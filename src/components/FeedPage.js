@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import './feedpage.css';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import Hackathon from "./Hackathon"; // 👈 import the component
 
 export default function Feed() {
   const [newPost, setNewPost] = useState('');
@@ -9,6 +10,8 @@ export default function Feed() {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   const [image, setImage] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("feed"); // 👈 tab state
 
   useEffect(() => {
     const auth = getAuth();
@@ -43,19 +46,15 @@ export default function Feed() {
     const displayName = user.displayName || user.email?.split('@')[0] || "Anonymous User";
 
     const formData = new FormData();
-  if(newPost.trim()) formData.append("content", newPost);
-  formData.append("uid", user.uid);
-  formData.append("name", displayName);
-  if (image) formData.append("image", image);
-  console.log([...formData.entries()]);
+    if (newPost.trim()) formData.append("content", newPost);
+    formData.append("uid", user.uid);
+    formData.append("name", displayName);
+    if (image) formData.append("image", image);
 
-  try {
-    await axios.post("http://localhost:5000/api/feed", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data"
-      }
-    });
-
+    try {
+      await axios.post("http://localhost:5000/api/feed", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
       setNewPost('');
       setImage(null);
       await fetchPosts();
@@ -90,50 +89,88 @@ export default function Feed() {
 
   return (
     <div className="feed-container">
-      <div className="header">Welcome!</div>
+      <div className="header">
+        <button className="hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
+        <img src="/path/to/logo.png" alt="Logo" className="header-logo" />
+        <h2>Welcome!</h2>
+      </div>
 
+      {/* Sidebar */}
+      <div className={`sidebar ${sidebarOpen ? 'show' : ''}`}>
+        <div
+  className={`sidebar-item ${activeTab === "feed" ? "active-tab" : ""}`}
+  onClick={() => setActiveTab("feed")}
+>
+  Feed
+</div>
+<div
+  className={`sidebar-item ${activeTab === "internships" ? "active-tab" : ""}`}
+  onClick={() => setActiveTab("internships")}
+>
+  Internships
+</div>
+<div
+  className={`sidebar-item ${activeTab === "messages" ? "active-tab" : ""}`}
+  onClick={() => setActiveTab("messages")}
+>
+  Messages
+</div>
+<div
+  className={`sidebar-item ${activeTab === "hackathon" ? "active-tab" : ""}`}
+  onClick={() => setActiveTab("hackathon")}
+>
+  Hackathons
+</div>
+
+      </div>
+
+      {/* Main Content */}
       <div className="main">
-        <div className="post-input">
-          <textarea 
-            placeholder="✏️ Write a post..."
-            value={newPost}
-            onChange={(e) => setNewPost(e.target.value)}
-          />
-          <input 
-    type="file" 
-    accept="image/*" 
-    onChange={(e) => setImage(e.target.files[0])} 
-  />
-          <button onClick={handlePost}>Create Post</button>
-        </div>
-
-        {error && <div className="error">{error}</div>}
-
-        <div className="posts">
-          {posts.map((post, index) => (
-            <div className="post-card" key={index}>
-              <div className="post-user">👤 <strong>{post.user.name}</strong></div>
-              <div className="post-content">
-                {post.content.split('\n').map((line, i) => (
-                  <div key={i}>{line}</div>
-                ))}
-              </div>
-              {/* ✅ Display image if exists */}
-    {post.image && (
-      <img
-        src={`http://localhost:5000/api/feed/${post._id}/image`}
-        alt="Post"
-        className="post-image"
-
-      />
-    )}
-              <div className="post-actions">
-                <button className='btn' onClick={() => handleEdit(post._id, post.content)}>Edit</button>
-                <button className='btn' onClick={() => handleDelete(post._id)}>Delete</button>
-              </div>
+        {activeTab === "feed" && (
+          <>
+            <div className="post-input">
+              <textarea
+                placeholder="✏️ Write a post..."
+                value={newPost}
+                onChange={(e) => setNewPost(e.target.value)}
+              />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setImage(e.target.files[0])}
+              />
+              <button onClick={handlePost}>Create Post</button>
             </div>
-          ))}
-        </div>
+
+            {error && <div className="error">{error}</div>}
+
+            <div className="posts">
+              {posts.map((post, index) => (
+                <div className="post-card" key={index}>
+                  <div className="post-user">👤 <strong>{post.user.name}</strong></div>
+                  <div className="post-content">
+                    {post.content.split('\n').map((line, i) => (
+                      <div key={i}>{line}</div>
+                    ))}
+                  </div>
+                  {post.image && (
+                    <img
+                      src={`http://localhost:5000/api/feed/${post._id}/image`}
+                      alt="Post"
+                      className="post-image"
+                    />
+                  )}
+                  <div className="post-actions">
+                    <button className='btn' onClick={() => handleEdit(post._id, post.content)}>Edit</button>
+                    <button className='btn' onClick={() => handleDelete(post._id)}>Delete</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {activeTab === "hackathon" && <Hackathon />}
       </div>
     </div>
   );
