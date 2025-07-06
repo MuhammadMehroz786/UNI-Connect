@@ -4,6 +4,7 @@ import './feedpage.css';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { signOut } from "firebase/auth";
 import Hackathon from "./Hackathon"; // 👈 import the component
+import { useNavigate } from "react-router-dom";
 
 export default function Feed() {
   const [newPost, setNewPost] = useState('');
@@ -13,6 +14,8 @@ export default function Feed() {
   const [image, setImage] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("feed"); // 👈 tab state
+  const navigate = useNavigate();
+
   const handleSignOut = () => {
   const auth = getAuth();
   signOut(auth)
@@ -124,7 +127,7 @@ export default function Feed() {
 </div>
 <div
   className={`sidebar-item ${activeTab === "messages" ? "active-tab" : ""}`}
-  onClick={() => setActiveTab("messages")}
+  onClick={() => { setActiveTab("messages"); navigate('/home'); }}
 >
   Messages
 </div>
